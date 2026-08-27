@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 from pysat.formula import CNF
 from pysat.solvers import Cadical153
@@ -46,27 +45,31 @@ def compute_effective_lower_bounds(lowerBounds: list, travelTimes: list) -> list
         t_eff[j + 1] = max(t_eff[j + 1], t_eff[j] + travelTimes[j])
     return t_eff
 
+counter = 1
+def new_var():
+    global counter
+    var = counter
+    counter += 1
+    return var
         
-def add_sc_amo(cnf: CNF, lits: list, nextVar: int) -> int:
+def add_sc_amo(cnf: CNF, lits: list) -> int:
     """ 
     Hàm mã hóa ràng buộc AMO sử dụng Sequential Counter
     Args:
         cnf: formula
         lits: danh sách các biến cần mã hóa
-        nextVar: biến phụ tiếp theo có thể sử dụng
     Returns:
-        nextVar: biến phụ tiếp theo có thể sử dụng cho lần mã hóa tiếp theo
+        số mệnh đề sử dụng
     """
     n = len(lits)
-    if n <= 1: return nextVar
-    if n == 2:
-        cnf.append([-lits[0], -lits[1]])
-        return nextVar
-    s = [nextVar + i for i in range(n - 1)]
-    nextVar += n - 1
+    if n <= 1: return 0
+    # if n == 2:
+    #     cnf.append([-lits[0], -lits[1]])
+    #     return 1
+    s = [new_var() for _ in range(n - 1)]
     
     # i = 0: x_0 -> s_0
-    cnf.append(-lits[0], s[0])
+    cnf.append([-lits[0], s[0]])
     
     # i = [1..n-2]
     for i in range(1, n - 1):
@@ -82,21 +85,24 @@ def add_sc_amo(cnf: CNF, lits: list, nextVar: int) -> int:
     # i = n-1: s_{n-2} -> -x_{n-1}
     cnf.append([-s[n - 2], -lits[n - 1]])
     
-    return nextVar
+    return len(cnf.clauses)
     
-def add_pairwise_amo(cnf : CNF, lits: list):
+def add_pairwise_amo(cnf : CNF, lits: list) -> int:
     """ 
     Hàm mã hóa ràng buộc AMO sử dụng Pairwise
     Args:
         cnf: formula
         lits: danh sách các biến cần mã hóa
+    Returns:
+        số mệnh đề sử dụng
     """
     n = len(lits)
-    if n <= 1: return
+    if n <= 1: return 0
     for i in range(n - 1):
         for j in range(i + 1, n):
             # x_i -> -x_j
             cnf.append([-lits[i], -lits[j]])
+    return len(cnf.clauses)
 
 if __name__ == "__main__":
     """ 
@@ -110,9 +116,7 @@ if __name__ == "__main__":
     print(t_eff)
     """
     
-    """ 
-    Chạy thử nghiệm với mock data
-    """
+    # Chạy thử nghiệm với mock data
     lowerBounds = [10, 20, 30]
     travelTimes = [50, 10]
     print(lowerBounds)
@@ -121,6 +125,33 @@ if __name__ == "__main__":
     print(t_eff)
     
     print("-" * 50)
-    cnf = CNF()
+    print(f"{"Sequential Counter":>28}{"Pairwise":>20}")
+    for n in range(2, 21):
+        x = [new_var() for _ in range(n)]
+        scCnf = CNF()
+        pwCnf = CNF()
+        scClauses = add_sc_amo(scCnf, x)
+        pwClauses = add_pairwise_amo(pwCnf, x)
+        print(f"n = {n:>2}:{scClauses:>20}{pwClauses:>20}")
     
-    
+    print("-" * 50)
+    # kiểm chúng tính tương đương nghiệm với n = 5
+    n = 5
+    x = [new_var() for _ in range(n)]
+    scCnf = CNF()
+    pwCnf = CNF()
+    add_sc_amo(scCnf, x)
+    add_pairwise_amo(pwCnf, x)
+    scSolver = Cadical153(bootstrap_with=scCnf.clauses)
+    pwSolver = Cadical153(bootstrap_with=pwCnf.clauses)
+    # assumption với tất cả 2^5 trường hợp
+    for mask in range(1 << n):
+        assignment = [x if (mask >> (x - 1)) & 1 else -x for x in range(1, n + 1)]
+        
+        scSat = scSolver.solve(assumptions=assignment)
+        pwSat = pwSolver.solve(assumptions=assignment)
+        
+        if scSat != pwSat:
+            print("Không tương đương nghiệm")
+            exit()
+    print("Sequential Counter và Pairwise tương đương nghiệm")
