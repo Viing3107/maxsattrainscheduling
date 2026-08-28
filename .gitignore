@@ -79,6 +79,7 @@ TAGS
 TAGS.*
 
 ## Python
+.venv/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -116,3 +117,27 @@ cplex_milp/results/ti/addtracktime
 cplex_milp/results/bigm/original
 cplex_milp/results/bigm/addstationtime
 cplex_milp/results/bigm/addtracktime
+
+## Core latex/pdflatex auxiliary files
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+
+## Build tool auxiliary files:
+*.fdb_latexmk
+*.synctex
+*.synctex(busy)
+*.synctex.gz
+*.synctex.gz(busy)
+*.pdfsync
+*.rubbercache
+rubber.cache
