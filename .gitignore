@@ -1,6 +1,7 @@
 # ───── Build artifacts ─────
 /target/
 /library/target/
+.cargo/
 /dist/
 *.rlib
 
@@ -51,6 +52,17 @@ manuscript/**/*.fdb_latexmk
 manuscript/**/*.bbl
 manuscript/**/*.blg
 manuscript/**/*.synctex.gz
+submissions/**/*.pdf
+submissions/**/*.xdv
+submissions/**/*.aux
+submissions/**/*.log
+submissions/**/*.toc
+submissions/**/*.out
+submissions/**/*.fls
+submissions/**/*.fdb_latexmk
+submissions/**/*.bbl
+submissions/**/*.blg
+submissions/**/*.synctex.gz
 
 # ───── Salvers (external dependency, not in repo) ─────
 /salvers/
@@ -75,6 +87,7 @@ desktop.ini
 # ───── Python ─────
 __pycache__/
 *.py[cod]
+.venv
 
 # ───── Execution scratch ─────
 quick_scripts/execution.txt

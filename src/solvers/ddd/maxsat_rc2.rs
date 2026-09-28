@@ -127,6 +127,8 @@ pub fn solve_debug<L: satcoder::Lit + Copy + std::fmt::Debug>(
         .collect();
     // Lan truyền backward lần đầu (chưa có ub hữu ích, nhưng forward sẽ update eff_lb)
     let (lb_init, _ub_init) = propagate_bounds(problem, eff_lb.clone(), eff_ub.clone());
+    // Nếu muốn tắt propagate_bounds() thì thay dòng trên thành:
+    // let (lb_init, _ub_init) = (eff_lb.clone(), eff_ub.clone());
     eff_lb = lb_init;
 
     // The first iteration (0) does not need a solve call; we
@@ -159,7 +161,7 @@ pub fn solve_debug<L: satcoder::Lit + Copy + std::fmt::Debug>(
     let mut age_tracker = ViolationAgeTracker::default();
     // Budget for selective refinement. None = add all (baseline behaviour).
     // Try Some(128) → Some(32) → Some(8) after verifying None gives identical results.
-    const REFINEMENT_BUDGET: Option<usize> = None;
+    const REFINEMENT_BUDGET: Option<usize> = Some(32);
 
     loop {
         if start_time.elapsed().as_secs_f64() > timeout {
@@ -228,6 +230,8 @@ pub fn solve_debug<L: satcoder::Lit + Copy + std::fmt::Debug>(
 
                         // §4.4: lan truyền backward — U_v mới ảnh hưởng đến U_{v-1}
                         let (upd_lb, upd_ub) = propagate_bounds(problem, eff_lb.clone(), new_ub);
+                        // Nếu muốn tắt propagate_bounds() thì thay 2 dòng trên thành:
+                        // let (upd_lb, upd_ub) = (eff_lb.clone(), eff_ub.clone());
                         eff_lb = upd_lb;
 
                         // Nếu ub tại visit nào đó giảm, thêm hard clause vào solver:

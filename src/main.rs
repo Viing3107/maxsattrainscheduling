@@ -477,6 +477,7 @@ fn main() {
                 | SolverType::MaxSatDddIncrementalNoProp
                 | SolverType::MaxSatDddPairwiseCustomRc2
                 | SolverType::MaxSatDddPairwiseCustomRc2NoProp
+                | SolverType::MaxsatRc2
                 | SolverType::BinarizedBigMEager10Sec
                 | SolverType::BinarizedBigMEager30Sec
                 | SolverType::BinarizedBigMEager60Sec
@@ -794,7 +795,7 @@ fn main() {
                     .map(|(v, _)| v),
                     SolverType::SatDdd => ddd_solvers::incremental_sat::solve_with_encoding_and_settings(
                         &mk_env,
-                        satcoder::solvers::rustsat_glucose::Solver::new(),
+                        satcoder::solvers::minisat::Solver::new(),
                         &p.problem,
                         TIMEOUT,
                         delay_cost_type,
@@ -812,7 +813,7 @@ fn main() {
                     SolverType::SatDddInc => {
                         ddd_solvers::incremental_sat::solve_incremental_with_encoding_and_settings(
                             &mk_env,
-                            satcoder::solvers::rustsat_glucose::Solver::new(),
+                            satcoder::solvers::minisat::Solver::new(),
                             &p.problem,
                             TIMEOUT,
                             delay_cost_type,
@@ -827,7 +828,7 @@ fn main() {
                     SolverType::SatDddSc => {
                         ddd_solvers::incremental_sat::solve_sc_with_encoding_and_settings(
                             &mk_env,
-                            satcoder::solvers::rustsat_glucose::Solver::new(),
+                            satcoder::solvers::minisat::Solver::new(),
                             &p.problem,
                             TIMEOUT,
                             delay_cost_type,
@@ -842,7 +843,7 @@ fn main() {
                     SolverType::SatDddScTotalizer => {
                         ddd_solvers::incremental_sat::solve_sc_with_encoding_and_settings(
                             &mk_env,
-                            satcoder::solvers::rustsat_glucose::Solver::new(),
+                            satcoder::solvers::minisat::Solver::new(),
                             &p.problem,
                             TIMEOUT,
                             delay_cost_type,
@@ -857,7 +858,7 @@ fn main() {
                     SolverType::SatDddScInc => {
                         ddd_solvers::incremental_sat::solve_incremental_sc_with_encoding_and_settings(
                             &mk_env,
-                            satcoder::solvers::rustsat_glucose::Solver::new(),
+                            satcoder::solvers::minisat::Solver::new(),
                             &p.problem,
                             TIMEOUT,
                             delay_cost_type,
@@ -876,7 +877,7 @@ fn main() {
                         // encoding configurable via --satddd-objective-encoding.
                         ddd_solvers::incremental_sat::solve_sc_addclauses_with_encoding_and_settings(
                             &mk_env,
-                            satcoder::solvers::rustsat_glucose::Solver::new(),
+                            satcoder::solvers::minisat::Solver::new(),
                             &p.problem,
                             TIMEOUT,
                             delay_cost_type,
@@ -921,7 +922,7 @@ fn main() {
                         };
                         ddd_solvers::puresat::solve_sc_fresh_addclauses_with_encoding_and_settings(
                             &mk_env,
-                            satcoder::solvers::rustsat_glucose::Solver::new(),
+                            satcoder::solvers::minisat::Solver::new(),
                             &p.problem,
                             TIMEOUT,
                             delay_cost_type,

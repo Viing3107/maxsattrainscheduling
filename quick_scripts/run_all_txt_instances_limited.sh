@@ -87,7 +87,7 @@ run_one() {
 
   echo "Running $instance_name"
   printf '%s\n' "$instance_name" >> "$order_file"
-  start_ms="$(date +%s%3N)"
+  start_ms="$(date +%s%N | cut -c1-13)"
 
   (
     if [[ "$RAM_LIMIT_KB" -gt 0 ]]; then
@@ -106,7 +106,7 @@ run_one() {
       >"$stdout_log" \
       2>"$stderr_log"
   ) || status=$?
-  end_ms="$(date +%s%3N)"
+  end_ms="$(date +%s%N | cut -c1-13)"
   elapsed_ms=$((end_ms - start_ms))
   elapsed_seconds="$(awk "BEGIN { printf \"%.3f\", $elapsed_ms / 1000 }")"
 
